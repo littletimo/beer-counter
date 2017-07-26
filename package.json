@@ -19,6 +19,7 @@
     "jest-expo": "~18.0.0",
     "mockery": "^2.0.0",
     "react-addons-test-utils": "~15.4.1",
+    "react-devtools": "^2.5.0",
     "react-dom": "~15.4.1",
     "react-native-scripts": "0.0.50",
     "react-test-renderer": "16.0.0-alpha.12",
@@ -55,11 +56,18 @@
     "fixcode": "standard --fix"
   },
   "jest": {
-    "preset": "jest-expo",
-    "testMatch": ["**/Tests/**/*.js", "**/?(*.)(spec|test).js?(x)"],
-    "testPathIgnorePatterns": ["/node_modules/", "Tests/Setup.js"],
-    "setupFiles": ["./Tests/Setup"],
-    "preset": "react-native"
+    "preset": "react-native",
+    "testMatch": [
+      "**/Tests/**/*.js",
+      "**/?(*.)(spec|test).js?(x)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "Tests/Setup.js"
+    ],
+    "setupFiles": [
+      "./Tests/Setup"
+    ]
   },
   "config": {},
   "standard": {
