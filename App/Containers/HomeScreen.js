@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {ScrollView, View, Text} from 'react-native';
 import {connect} from 'react-redux';
+import moment from 'moment';
 import DrinkActions from '../Redux/DrinkRedux';
 import RoundedButton from '../Components/RoundedButton';
 
@@ -22,14 +23,17 @@ class HomeScreen extends Component {
             {this.props.drinks
               ? this.props.drinks.map(drink => {
                   return (
-                    <Text key={drink.name}>
-                      {drink.name}
+                    <Text key={drink.id}>
+                      {`${drink.name} - ${moment(drink.time).fromNow()}`}
                     </Text>
                   );
                 })
               : null}
+            <RoundedButton onPress={this.props.addLastDrink}>
+              Add Last
+            </RoundedButton>
             <RoundedButton onPress={this.handleClick.bind(this)}>
-              add
+              Add
             </RoundedButton>
           </View>
         </ScrollView>
@@ -43,7 +47,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => {
-  return {};
+  return {
+    addLastDrink: () => dispatch(DrinkActions.addLastDrink()),
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
