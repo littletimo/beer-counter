@@ -1,5 +1,12 @@
+// @flow
+
 import React, {Component} from 'react';
-import {ScrollView, TextInput, KeyboardAvoidingView} from 'react-native';
+import {
+  ScrollView,
+  TextInput,
+  KeyboardAvoidingView,
+  DatePickerIOS,
+} from 'react-native';
 import {connect} from 'react-redux';
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 import DrinkActions from '../Redux/DrinkRedux';
@@ -11,7 +18,10 @@ import styles from './Styles/AddScreenStyle';
 class AddScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = {text: null};
+    this.state = {
+      text: null,
+      date: new Date(),
+    };
   }
   render() {
     return (
@@ -30,10 +40,15 @@ class AddScreen extends Component {
             value={this.state.text}
             autoFocus
           />
+          <DatePickerIOS
+            date={this.state.date}
+            onDateChange={date => this.setState({date})}
+          />
           <RoundedButton
             onPress={() => {
               this.props.addDrink({
                 name: this.state.text,
+                time: this.state.date.toJSON(),
               });
               this.props.navigation.goBack();
             }}
