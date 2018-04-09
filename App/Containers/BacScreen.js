@@ -11,7 +11,36 @@ import moment from "moment";
 class BACScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = { person: null };
+    // accumlate drinks
+    const people = {};
+    let person = null;
+    this.props.drinks
+      .filter(drink => drink.person != null && drink.alcoholic)
+      .forEach(drink => {
+        person = person || drink.person;
+        if (!people[drink.person]) {
+          people[drink.person] = [drink];
+        } else {
+          people[drink.person].push(drink);
+        }
+      });
+    this.state = { person, people };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const people = {};
+    let person = null;
+    nextProps.drinks
+      .filter(drink => drink.person != null && drink.alcoholic)
+      .forEach(drink => {
+        person = person || drink.person;
+        if (!people[drink.person]) {
+          people[drink.person] = [drink];
+        } else {
+          people[drink.person].push(drink);
+        }
+      });
+    this.setState({ people });
   }
 
   calculateBAC(person, drinks) {
@@ -30,17 +59,7 @@ class BACScreen extends Component {
   }
 
   render() {
-    // accumlate drinks
-    const people = {};
-    this.props.drinks
-      .filter(drink => drink.person != null && drink.alcoholic)
-      .forEach(drink => {
-        if (!people[drink.person]) {
-          people[drink.person] = [drink];
-        } else {
-          people[drink.person].push(drink);
-        }
-      });
+    const { people } = this.state;
     const textStyle = { marginBottom: 10, marginLeft: 20 };
     return (
       <View>

@@ -8,8 +8,10 @@ import {
   DatePickerIOS,
   Text,
   Switch,
+  View,
 } from "react-native";
 import { connect } from "react-redux";
+import CheckBox from "react-native-easy-checkbox";
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 import DrinkActions from "../Redux/DrinkRedux";
 import RoundedButton from "../Components/RoundedButton";
@@ -25,6 +27,7 @@ class AddScreen extends Component {
       drink: null,
       alcoholic: false,
       date: new Date(),
+      people: [],
     };
   }
   render() {
@@ -40,16 +43,58 @@ class AddScreen extends Component {
       marginLeft: 20,
       marginBottom: 5,
     };
+    const people = [];
+    this.props.drinks.filter(drink => drink.person != null).forEach(drink => {
+      if (!people.includes(drink.person)) people.push(drink.person);
+    });
+    // console.log(people, this.state.people);
     return (
       <ScrollView style={styles.container}>
-        <KeyboardAvoidingView behavior="position">
+        <KeyboardAvoidingView behavior="padding">
           <Text style={{ ...labelStyle, marginTop: 40 }}>Person</Text>
           <TextInput
-            style={inputStyle}
+            style={{ ...inputStyle, marginBottom: 10 }}
             onChangeText={text => this.setState({ name: text })}
             value={this.state.text}
             autoFocus
           />
+          <View
+          // style={{
+          //   ...labelStyle,
+          //   flex: 1,
+          //   flexDirection: "row",
+          //   flexWrap: "wrap",
+          //   justifyContent: "flex-start",
+          //   alignItems: "flex-start",
+          //   marginBottom: 10,
+          // }}
+          >
+            {people.map(person => (
+              <View key={person}>
+                <CheckBox
+                  checkIconStyle={labelStyle}
+                  checkBoxTrueStyle={labelStyle}
+                  checkBoxFalseStyle={labelStyle}
+                  name={person}
+                  checked={this.state.people.includes(person)}
+                  onChange={value => {
+                    const people = this.state.people;
+                    const index = people.indexOf(person);
+                    // console.log(people, people.splice(index, 1));
+                    if (index < 0)
+                      this.setState({
+                        people: [...people, person],
+                      });
+                    else {
+                      people.splice(index, 1);
+                      this.setState({ people });
+                    }
+                  }}
+                />
+                <Text style={labelStyle}>{person}</Text>
+              </View>
+            ))}
+          </View>
           <Text style={{ ...labelStyle, marginTop: 5 }}>Beverage</Text>
           <TextInput
             style={inputStyle}
@@ -70,12 +115,23 @@ class AddScreen extends Component {
           />
           <RoundedButton
             onPress={() => {
-              this.props.addDrink({
-                person: this.state.name,
-                name: this.state.drink,
-                alcoholic: this.state.alcoholic,
-                time: this.state.date.toJSON(),
-              });
+              if (this.state.name && this.state.name.length)
+                this.props.addDrink({
+                  person: this.state.name,
+                  name: this.state.drink,
+                  alcoholic: this.state.alcoholic,
+                  time: this.state.date.toJSON(),
+                });
+              if (this.state.people.length) {
+                this.state.people.forEach(person => {
+                  this.props.addDrink({
+                    person: person,
+                    name: this.state.drink,
+                    alcoholic: this.state.alcoholic,
+                    time: this.state.date.toJSON(),
+                  });
+                });
+              }
               this.props.navigation.goBack();
             }}
           >
@@ -87,8 +143,10 @@ class AddScreen extends Component {
   }
 }
 
+const getDrinks = drinks => drinks;
+
 const mapStateToProps = state => {
-  return {};
+  return { drinks: state.drink.drinks };
 };
 
 const mapDispatchToProps = dispatch => {
