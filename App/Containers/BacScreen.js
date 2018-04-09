@@ -50,12 +50,20 @@ class BACScreen extends Component {
     // BAC as a percentage – (elapsed time in hours x 0. 015)
     // 14 g of alcohol in standard
     let bac = 0;
+    const drinksByHour = {};
     drinks.forEach(drink => {
-      const oneDrink = 14 / (75000 * 0.68) * 100;
-      bac += oneDrink;
-      bac -= moment().diff(drink.time, "hours") * 0.015;
+      const hour = moment().diff(drink.time, "hours");
+      drinksByHour[hour]
+        ? drinksByHour[hour].push(drink)
+        : (drinksByHour[hour] = [drink]);
     });
-    return Math.max(bac, 0).toFixed(4);
+    Object.keys(drinksByHour).forEach(hour => {
+      const increase =
+        14 * drinksByHour[hour].length / (75000 * 0.68) * 100 - hour * 0.015;
+      // console.log(hour, drinksByHour[hour].length, increase);
+      bac += Math.max(increase, 0);
+    });
+    return bac.toFixed(4);
   }
 
   render() {
